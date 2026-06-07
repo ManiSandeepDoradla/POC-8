@@ -1,0 +1,20 @@
+---
+- name: Deploy Web Container
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Stop old container if existing
+      docker_container:
+        name: my-running-cloud-app
+        state: absent
+
+    - name: Run fresh container copy
+      docker_container:
+        name: my-running-cloud-app
+        image: "cloud-web-app:{{ lookup('env', 'BUILD_NUMBER') }}"
+        state: started
+        restart_policy: always
+        published_ports:
+          - "8081:80"
